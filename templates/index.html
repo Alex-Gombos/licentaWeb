@@ -1,0 +1,38 @@
+<!doctype html>
+<html>
+    <head>
+        <title>Named Entity Recognition</title>
+        
+        <style>
+            .B-HEMA{
+                background-color: orange;
+                color: black;
+            }
+            .O{
+                background-color: yellowgreen;
+                color: black;
+            }
+            li {
+                display: inline;
+            }
+
+        </style>
+    </head>
+    <body>
+        <form action="/predict" method="post">
+            <label for="sentence">Enter a sentence:</label>
+            <input type="text" id="sentence" name="sentence"><br><br>
+            <input type="submit" value="Predict">
+        </form>
+        {% if predicted_labels %}
+        <br>
+        <p>Predicted labels:</p>
+        <ul>
+                {% for i in word_list[0] %}
+                <li><mark class = " {{ word_list[1][loop.index-1] }} ">{{ i }}</mark></li>
+                {% endfor %}
+        </ul>
+
+        {% endif %}
+    </body>
+</html>
