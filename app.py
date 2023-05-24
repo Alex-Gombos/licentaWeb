@@ -9,7 +9,7 @@ app = Flask(__name__)
 # load the tokenizer and model
 tokenizer = AutoTokenizer.from_pretrained("dumitrescustefan/bert-base-romanian-uncased-v1")
 
-with open('outputSentence.txt', 'r') as f:
+with open('outputSentence.txt', 'r', encoding="utf8") as f:
     data = json.load(f)
 
 dataset = Dataset.from_list(data)
@@ -18,7 +18,7 @@ dataset = Dataset.from_list(data)
 label_names = sorted(set(label for labels in dataset["ner_tags"] for label in labels))
 dataset = dataset.cast_column("ner_tags", Sequence(ClassLabel(names=label_names)))
 
-model = AutoModelForTokenClassification.from_pretrained(r"D:\licenta\trained")
+model = AutoModelForTokenClassification.from_pretrained(r"D:\Alex\Licenta\model")
 
 
 # define a function to predict labels for an input sentence
@@ -42,14 +42,13 @@ def decode_input(input_sentence):
 
 def concat_subwords(tokens):
     words = []
-    for index, token in enumerate(tokens):
-        print(token[:2])
-        cut=token
-        for index2, letter in enumerate(token):
-            if letter == ("#"):
-                print("DA")
-                cut = token[:index2-2] + token[index2 +1:]
-        words.append(cut)
+    for token in tokens:
+        if '#' in token:
+            cut = token.replace("#", "")
+            words.append(cut)
+        else:
+            token = token
+            words.append(token)
     return words
 
 def print_every(decoded_input , predicted_labels):
@@ -61,7 +60,7 @@ def print_every(decoded_input , predicted_labels):
         # if the label has changed, print the current word and its label
         if label != current_label:
             if current_word:
-                #print(current_word, current_label)
+                print(current_word, current_label)
                 list1.append(current_word)
                 list2.append(current_label)
             current_word = token
@@ -69,7 +68,7 @@ def print_every(decoded_input , predicted_labels):
         # if the label is the same, append the current token to the current word
         else:
             current_word += " " + token
-    list_concat = concat_subwords(list1)       
+    list_concat = concat_subwords(list1)
     return list_concat, list2
 
 @app.route('/')
@@ -87,6 +86,9 @@ def predict():
     decoded_input = decode_input(input_sentence)
 
     word_list = print_every(decoded_input, predicted_labels)
+
+    # print(decoded_input)
+    # print(predicted_labels)
 
     # display the predicted labels on the webpage
     return render_template('index.html', predicted_labels=predicted_labels, decoded_input = decoded_input, tokenizer=tokenizer, word_list=word_list)
