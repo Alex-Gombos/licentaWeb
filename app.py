@@ -40,16 +40,25 @@ def decode_input(input_sentence):
     decoded_input = tokenizer.decode(tokenized_input.squeeze().tolist())
     return tokenizer.tokenize(decoded_input)
 
-def concat_subwords(tokens):
-    words = []
-    for token in tokens:
-        if '#' in token:
-            cut = token.replace("#", "")
-            words.append(cut)
+def concat_new(input):
+    concatenated_text = []
+    for line in input:
+        newLine = ""
+        if "##" in line:
+            i = 0
+            for charater in line:
+                if charater != '#':
+                    newLine = newLine + charater
+                else:
+                    i = i + 1
+                    if i==2:
+                        i=0
+                        newLine = newLine[:-1]
+            concatenated_text.append(newLine)
         else:
-            token = token
-            words.append(token)
-    return words
+            concatenated_text.append(line)
+    print(concatenated_text)
+    return concatenated_text
 
 def print_every(decoded_input , predicted_labels):
     current_word = ""
@@ -68,7 +77,11 @@ def print_every(decoded_input , predicted_labels):
         # if the label is the same, append the current token to the current word
         else:
             current_word += " " + token
-    list_concat = concat_subwords(list1)
+    if len(list1)==0 and len(list2)==0:
+        list1.append(current_word)
+        list2.append(label)
+    list_concat = concat_new(list1)
+
     return list_concat, list2
 
 @app.route('/')
@@ -87,9 +100,9 @@ def predict():
 
     word_list = print_every(decoded_input, predicted_labels)
 
-    # print(decoded_input)
-    # print(predicted_labels)
-
+    print(word_list)
+    print(predicted_labels)
+    print(decoded_input)
     # display the predicted labels on the webpage
     return render_template('index.html', predicted_labels=predicted_labels, decoded_input = decoded_input, tokenizer=tokenizer, word_list=word_list)
 
