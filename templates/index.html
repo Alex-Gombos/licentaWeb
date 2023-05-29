@@ -161,12 +161,19 @@
     </header>
     
     <div class="form-container">
-        <form action="/predict" method="post">
+        <form action="/predict" method="post" enctype="multipart/form-data">
             <label for="sentence">Enter a sentence:</label>
             <br>
             <textarea id="sentence" name="sentence" placeholder="Enter your sentence here" oninput="this.style.height = ''; this.style.height = this.scrollHeight + 'px'"></textarea><br><br>
+            <input type="file" name="file" accept=".pdf" value="Predict"><br><br>
             <input type="submit" value="Predict">
         </form>
+
+        {% if error %}
+        <div class="error">
+            <p>{{ error }}</p>
+        </div>
+        {% endif %}
         
         {% if predicted_labels %}
         <div class="predicted-labels">
