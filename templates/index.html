@@ -2,157 +2,7 @@
 <html>
 <head>
     <title>Named Entity Recognition</title>
-    
-    <style>
-        /* Header styles */
-        header {
-            background-color: #333;
-            color: #fff;
-            padding: 10px;
-            text-align: center;
-            border-radius: 10px;
-            margin-bottom: 20px;
-        }
-        
-        header h1 {
-            font-size: 24px;
-            margin: 0;
-        }
-        
-        header p {
-            font-size: 16px;
-            margin: 0;
-        }
-        
-        /* Form container styles */
-        .form-container {
-            max-width: 600px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-        
-        /* Form field styles */
-        textarea#sentence {
-            width: 100%;
-            height: 100px;
-            padding: 10px;
-            border-radius: 10px;
-            border: 1px solid #ccc;
-            resize: vertical;
-        }
-        
-        /* Predicted labels styles */
-        .predicted-labels {
-            margin-top: 20px;
-        }
-        
-        .predicted-labels p {
-            font-weight: bold;
-        }
-        
-        .predicted-labels ul {
-            list-style-type: none;
-            padding: 0;
-        }
-        
-        .predicted-labels li {
-            display: inline;
-        }
-        
-        .B-GASTRO {
-            background-color: palegreen;
-            color: black;
-        }
-        
-        .B-OTHER {
-            background-color: yellow;
-            color: black;
-        }
-
-        .B-BIO {
-            background-color: green;
-            color: black;
-        }
-
-        .B-CHEM {
-            background-color: yellowgreen;
-            color: black;
-        }
-
-        .B-FOOD {
-            background-color: goldenrod;
-            color: black;
-        }
-
-        .B-HEMATO {
-            background-color: orange;
-            color: black;
-        }
-
-        .B-MED {
-            background-color: orangered;
-            color: black;
-        }
-
-        .B-NAME {
-            background-color: olivedrab;
-            color: black;
-        }
-
-        .B-ERR {
-            background-color: red;
-            color: black;
-        }
-        
-        .O {
-            background-color: gray;
-            color: black;
-        }
-        
-        /* Legend styles */
-        .legend {
-            margin-top: 20px;
-            text-align: center;
-        }
-        
-        .legend p {
-            font-weight: bold;
-            margin-bottom: 5px;
-        }
-        
-        .legend ul {
-            list-style-type: none;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-        }
-        
-        .legend li {
-            display: inline-block;
-            margin-right: 10px;
-        }
-        
-        .legend .B-GASTRO {
-            background-color: red;
-            color: black;
-            padding: 5px 10px;
-            border-radius: 5px;
-        }
-        
-        .legend .B-OTHER {
-            background-color: yellow;
-            color: black;
-            padding: 5px 10px;
-            border-radius: 5px;
-        }
-        
-        .legend .O {
-            background-color: gray;
-            color: black;
-            padding: 5px 10px;
-            border-radius: 5px;
-        }
-    </style>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
     <header>
@@ -164,9 +14,15 @@
         <form action="/predict" method="post" enctype="multipart/form-data">
             <label for="sentence">Enter a sentence:</label>
             <br>
-            <textarea id="sentence" name="sentence" placeholder="Enter your sentence here" oninput="this.style.height = ''; this.style.height = this.scrollHeight + 'px'"></textarea><br><br>
-            <input type="file" name="file" accept=".pdf" value="Predict"><br><br>
-            <input type="submit" value="Predict">
+            <textarea id="sentence" name="sentence" placeholder="Enter your sentence here" oninput="this.style.height = ''; this.style.height = this.scrollHeight + 'px'"></textarea>
+            <br><br>
+            <input type="submit" name="submit_text" value="Predict from Text">
+            <br><br>
+            <label for="file">Upload a file:</label>
+            <br>
+            <input type="file" id="file" name="file" accept=".pdf">
+            <br><br>
+            <input type="submit" name="submit_file" value="Predict from File">
         </form>
 
         {% if error %}
@@ -185,15 +41,21 @@
             </ul>
         </div>
         {% endif %}
-        
-        <div class="legend">
-            <p>Legend:</p>
-            <ul>
-                <li><span class="B-GASTRO">B-GASTRO</span>: Represents a gastro entity</li>
-                <li><span class="B-OTHER">B-OTHER</span>: Represents another type of entity</li>
-                <li><span class="O">O</span>: Represents other words without specific entity</li>
-            </ul>
-        </div>
+    </div>
+    
+    <div class="legend">
+        <p>Legend:</p>
+        <ul>
+            <li><span class="B-GASTRO">B-GASTRO</span>: Represents a gastro entity</li>
+            <li><span class="B-BIO">B-BIO</span>: Represents another type of entity</li>
+            <li><span class="B-CHEM">B-CHEM</span>: Represents another type of entity</li>
+            <li><span class="B-FOOD">B-FOOD</span>: Represents another type of entity</li>
+            <li><span class="B-HEMATO">B-HEMATO</span>: Represents another type of entity</li>
+            <li><span class="B-MED">B-MED</span>: Represents another type of entity</li>
+            <li><span class="B-NAME">B-NAME</span>: Represents another type of entity</li>
+            <li><span class="B-OTHER">B-OTHER</span>: Represents another type of entity</li>
+            <li><span class="O">O</span>: Represents other words without specific entity</li>
+        </ul>
     </div>
 </body>
 </html>

@@ -6,7 +6,7 @@ from datasets import Dataset, ClassLabel, Sequence
 import io
 from PyPDF2 import PdfReader
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder='static')  # Add the static_folder parameter here
 
 # load the tokenizer and model
 tokenizer = AutoTokenizer.from_pretrained("dumitrescustefan/bert-base-romanian-uncased-v1")
@@ -63,8 +63,24 @@ def decode_input(input_sentence):
 
 def concat_new(input):
     concatenated_text = []
-    for line in input:
+    buffer = ""
+    for index,line in enumerate(input):
         newLine = ""
+        if line[0] == '#':
+            words = concatenated_text[-1].split()
+            last_word = words[-1]
+            temp = ' '.join(concatenated_text[-1].split(' ')[:-1])
+            concatenated_text[-1] = temp
+            newLine = newLine + last_word + " "
+        if "[CLS]" in line:
+            temp = line.replace("[CLS]", "")
+            line = temp
+        if "[SEP]" in line:
+            temp = line.replace("[SEP]", "")
+            line = temp
+        if "[UNK]" in line:
+            temp = line.replace("[SEP]", "")
+            line = temp
         if "##" in line:
             i = 0
             for charater in line:
@@ -78,7 +94,8 @@ def concat_new(input):
             concatenated_text.append(newLine)
         else:
             concatenated_text.append(line)
-    print(concatenated_text)
+        last_word_index = index
+    #print(concatenated_text)
     return concatenated_text
 
 def print_every(decoded_input , predicted_labels):
@@ -90,7 +107,7 @@ def print_every(decoded_input , predicted_labels):
         # if the label has changed, print the current word and its label
         if label != current_label:
             if current_word:
-                print(current_word, current_label)
+                #print(current_word, current_label)
                 list1.append(current_word)
                 list2.append(current_label)
             current_word = token
@@ -113,7 +130,8 @@ def home():
 def predict():
 
     # Check if a file was uploaded
-    if 'file' in request.files:
+    if 'submit_file' in request.form:
+        print("FILE")
         file = request.files['file']
         # Check if the file has a PDF extension
         if file.filename.endswith('.pdf'):
@@ -145,8 +163,8 @@ def predict():
 
         return render_template('index.html', predicted_labels=predicted_labels, decoded_input = decoded_input, tokenizer=tokenizer, word_list=word_list)
 
-    else:
-
+    elif 'submit_text' in request.form:
+        print("TEXT")
         # get the input sentence from the form
         input_sentence = request.form['sentence']
 
@@ -172,8 +190,8 @@ def predict():
             # print(word_list)
             # print(predicted_labels)
             # print(decoded_input)
-        print(decoded_input_all)
-        print(predicted_labels_all)
+        # print(decoded_input_all)
+        # print(predicted_labels_all)
         word_list = print_every(decoded_input_all, predicted_labels_all)
         # display the predicted labels on the webpage
         return render_template('index.html', predicted_labels=predicted_labels, decoded_input = decoded_input, tokenizer=tokenizer, word_list=word_list)
