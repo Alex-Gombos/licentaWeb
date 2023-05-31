@@ -204,3 +204,50 @@ margin-right: 400px;
     padding: 5px 10px;
     border-radius: 5px;
 }
+
+/* Form field styles */
+input[type="submit"] {
+    background-color: #80ACF0 ;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+input[type="submit"]:hover {
+    background-color: #4382e0;
+}
+
+input[type="file"] {
+    background-color: #f44336;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+input[type="file"]:hover {
+    background-color: #d32f2f;
+}
+
+.custom-file-input {
+    display: none;
+}
+
+label[for="file"] {
+    background-color: lightcoral;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+label[for="file"]:hover{
+    background-color: orangered;
+}

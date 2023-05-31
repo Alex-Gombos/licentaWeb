@@ -79,7 +79,7 @@ def concat_new(input):
             temp = line.replace("[SEP]", "")
             line = temp
         if "[UNK]" in line:
-            temp = line.replace("[SEP]", "")
+            temp = line.replace("[UNK]", "")
             line = temp
         if "##" in line:
             i = 0
@@ -154,8 +154,6 @@ def predict():
 
             decoded_input = decode_input(s)
 
-            # word_list = print_every(decoded_input, predicted_labels)
-
             predicted_labels_all.extend(predicted_labels)
             decoded_input_all.extend(decoded_input)
 
@@ -176,22 +174,13 @@ def predict():
 
         for i, s in enumerate(result):
 
-            # predict the labels for the input sentence
             predicted_labels = predict_labels(s)
 
             decoded_input = decode_input(s)
 
-            # word_list = print_every(decoded_input, predicted_labels)
-
             predicted_labels_all.extend(predicted_labels)
             decoded_input_all.extend(decoded_input)
-
-
-            # print(word_list)
-            # print(predicted_labels)
-            # print(decoded_input)
-        # print(decoded_input_all)
-        # print(predicted_labels_all)
+        
         word_list = print_every(decoded_input_all, predicted_labels_all)
         # display the predicted labels on the webpage
         return render_template('index.html', predicted_labels=predicted_labels, decoded_input = decoded_input, tokenizer=tokenizer, word_list=word_list)
