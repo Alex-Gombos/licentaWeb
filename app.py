@@ -5,6 +5,7 @@ import json
 from datasets import Dataset, ClassLabel, Sequence
 import io
 from PyPDF2 import PdfReader
+import os
 
 app = Flask(__name__, static_folder='static')  # Add the static_folder parameter here
 
@@ -20,7 +21,14 @@ dataset = Dataset.from_list(data)
 label_names = sorted(set(label for labels in dataset["ner_tags"] for label in labels))
 dataset = dataset.cast_column("ner_tags", Sequence(ClassLabel(names=label_names)))
 
-model = AutoModelForTokenClassification.from_pretrained(r"D:\Alex\Licenta\model")
+# Get the current directory path
+current_directory = os.path.dirname(os.path.realpath(__file__))
+
+# Define the relative path to your model
+model_path = os.path.join(current_directory, "model")
+
+# Load the model
+model = AutoModelForTokenClassification.from_pretrained(model_path)
 
 def split_string(string, max_length):
     words = string.split()
