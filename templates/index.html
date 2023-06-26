@@ -4,8 +4,11 @@
     <title>Process medical documents</title>
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
     <script>
-        function changeColor(){
-            document.getElementById("fileLabel").style.background='#4CAF50';
+        function changeColor() {
+            var fileInput = document.getElementById("file");
+            var fileName = fileInput.value.split("\\").pop(); // Extract the filename from the file path
+            document.getElementById("fileLabel").style.background = '#4CAF50';
+            document.getElementById("fileLabel").innerHTML = "File: " + fileName;
         }
         function checkText() {
             if (document.getElementById("sentence").value === "") {
@@ -26,12 +29,12 @@
 </head>
 <body>
     <header>
-        <h1>Medical words finder</h1>
+        <h1>Medical Words Finder</h1>
         <p>Enter a sentence to predict named entities</p>
     </header>
     
     <div class="form-container">
-        <form action="/predict" method="post" enctype="multipart/form-data">
+        <form action="/predict" method="POST" enctype="multipart/form-data">
             <label for="sentence">Enter a sentence:</label>
             <br>
             <textarea id="sentence" name="sentence" placeholder="Enter your sentence here" oninput="this.style.height = ''; this.style.height = this.scrollHeight + 'px'"  onclick="document.getElementById('button1').disabled = false;"></textarea>
@@ -41,6 +44,7 @@
             <label id="fileLabel" for="file">Upload a file:</label>
             <input type="file" id="file" name="file" accept=".pdf" class="custom-file-input" onchange="changeColor()" onclick="document.getElementById('button2').disabled = false;">
             </label>
+            <span id="fileName"></span>
             <br><br>
             <input id="button2" type="submit" name="submit_file" value="Predict from File" onclick="checkText2()">
         </form>
@@ -61,6 +65,16 @@
             </ul>
         </div>
         {% endif %}
+
+        {% if predictions_text %}
+        <div class="download-predictions" style="margin-top: 25px;">
+            <form action="{{ url_for('download_predictions') }}" method="POST">
+                <input type="hidden" name="predictions_text" value="{{ predictions_text }}">
+                <input type="hidden" name="predictions_filename" value="{{ predictions_filename }}">
+                <button type="submit" class="button-download">Download Predictions</button>
+            </form>
+        </div>
+        {% endif %}
     </div>
     
     <div class="legend">
@@ -72,7 +86,7 @@
             <li><span class="B-FOOD">FOOD</span>: Represents a Food related entity</li>
             <li><span class="B-HEMATO">HEMATO</span>: Hematology related term</li>
             <li><span class="B-MED">MED</span>: General medical term</li>
-            <li><span class="B-NAME">: Medically related name</span></li>
+            <li><span class="B-NAME">NAME</span>: Medically related name</li>
             <li><span class="B-OTHER">OTHER</span>: A type of medical entity</li>
             <li><span class="O">O</span>: Non medical entity</li>
         </ul>

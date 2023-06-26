@@ -251,3 +251,17 @@ label[for="file"] {
 label[for="file"]:hover{
     background-color: orangered;
 }
+
+button[type="submit"] {
+    background-color: #80ACF0 ;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+button[type="submit"]:hover {
+    background-color: #4382e0;
+}

@@ -6,6 +6,8 @@ from datasets import Dataset, ClassLabel, Sequence
 import io
 from PyPDF2 import PdfReader
 import os
+from flask import send_file
+from flask import make_response
 
 app = Flask(__name__, static_folder='static')  # Add the static_folder parameter here
 
@@ -24,11 +26,15 @@ dataset = dataset.cast_column("ner_tags", Sequence(ClassLabel(names=label_names)
 # Get the current directory path
 current_directory = os.path.dirname(os.path.realpath(__file__))
 
-# Define the relative path to your model
-model_path = os.path.join(current_directory, "model")
+# # Define the relative path to your model
+# model_path = os.path.join(current_directory, "model")
 
-# Load the model
-model = AutoModelForTokenClassification.from_pretrained(model_path)
+# # Load the model
+# model = AutoModelForTokenClassification.from_pretrained(model_path)
+
+model = AutoModelForTokenClassification.from_pretrained("AlexGombos/mwf")
+
+
 
 def split_string(string, max_length):
     words = string.split()
@@ -71,8 +77,8 @@ def decode_input(input_sentence):
 
 def concat_new(input):
     concatenated_text = []
-    buffer = ""
     for index,line in enumerate(input):
+        print(line)
         newLine = ""
         if line[0] == '#':
             words = concatenated_text[-1].split()
@@ -167,7 +173,9 @@ def predict():
 
             word_list = print_every(decoded_input_all, predicted_labels_all)
 
-        return render_template('index.html', predicted_labels=predicted_labels, decoded_input = decoded_input, tokenizer=tokenizer, word_list=word_list)
+        predictions_text = "\n".join([f"{word}\t{label}" for word, label in zip(decoded_input_all, predicted_labels_all)])
+        predictions_filename = "predictions.txt"
+        return render_template('index.html', predictions_text=predictions_text, predictions_filename=predictions_filename, predicted_labels=predicted_labels, decoded_input=decoded_input, tokenizer=tokenizer, word_list=word_list)
 
     elif 'submit_text' in request.form:
         print("TEXT")
@@ -191,7 +199,36 @@ def predict():
         
         word_list = print_every(decoded_input_all, predicted_labels_all)
         # display the predicted labels on the webpage
-        return render_template('index.html', predicted_labels=predicted_labels, decoded_input = decoded_input, tokenizer=tokenizer, word_list=word_list)
+        # Prepare the predictions for download
+        predictions_text = "\n".join([f"{word}\t{label}" for word, label in zip(decoded_input, predicted_labels)])
+        predictions_filename = "predictions.txt"
+
+        # Return the download link
+        return render_template('index.html', predictions_text=predictions_text, predictions_filename=predictions_filename, predicted_labels=predicted_labels, decoded_input=decoded_input, tokenizer=tokenizer, word_list=word_list)
+
+@app.route('/download_predictions', methods=['POST'])
+def download_predictions():
+    # Retrieve the predictions text and filename from the query parameters
+    predictions_text = request.form.get('predictions_text')
+    predictions_filename = request.form.get('predictions_filename')
+
+    # Create a file-like object in memory
+    buffer = io.BytesIO()
+
+    # Write the predictions text to the buffer
+    buffer.write(predictions_text.encode('utf-8'))
+    buffer.seek(0)
+
+    # Create a response object
+    response = make_response(buffer.getvalue())
+
+    # Set the Content-Disposition header to specify the filename
+    response.headers['Content-Disposition'] = f'attachment; filename={predictions_filename}'
+
+    # Set the content type as plain text
+    response.headers['Content-Type'] = 'text/plain'
+
+    return response
 
 if __name__ == '__main__':
     app.run(debug=True)
