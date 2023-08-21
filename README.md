@@ -1,3 +1,9 @@
+# Related repositories
+
+To see how the dataset was build [head to this repository](https://github.com/Alex-Gombos/SaxParser)
+
+Too see how the model was train [head to this repository](https://github.com/Alex-Gombos/Fine-tuning)
+
 # How to run
 
 After unzipping the project, run the following commands in the terminal to install all neccesarry dependecies:
