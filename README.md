@@ -1,8 +1,8 @@
 # Related repositories
 
-To see how the dataset was build [head to this repository](https://github.com/Alex-Gombos/SaxParser)
+To see how the dataset was built [head to this repository](https://github.com/Alex-Gombos/SaxParser)
 
-Too see how the model was train [head to this repository](https://github.com/Alex-Gombos/Fine-tuning)
+Too see how the model was trained [head to this repository](https://github.com/Alex-Gombos/Fine-tuning)
 
 # How to run
 
